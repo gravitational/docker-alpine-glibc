@@ -29,9 +29,9 @@ steps:
     commands:
     # wait for docker to start
     - sleep 5
-    - docker build --build-arg ALPINE_VERSION=$ALPINE_VERSION -t $REPO/gravitational/docker-alpine-glibc:$ALPINE_VERSION --pull .
+    - docker build --build-arg ALPINE_VERSION=$ALPINE_VERSION -t $REPO/gravitational/alpine-glibc:$ALPINE_VERSION --pull .
     - docker login -u="$PLUGIN_USERNAME" -p="$PLUGIN_PASSWORD" $REPO
-    - docker push $REPO/gravitational/docker-alpine-glibc:$ALPINE_VERSION
+    - docker push $REPO/gravitational/alpine-glibc:$ALPINE_VERSION
 
 services:
   - name: Start Docker
@@ -47,6 +47,6 @@ volumes:
 
 ---
 kind: signature
-hmac: e7708b06e9dc74486b61ef6313b83459bae74434163450e34c0a1bfff1b6c868
+hmac: 5451b38126ef6da2cedd4492eebea11ea7e1a948141f33279c45ae6bc5abfff3
 
 ...
