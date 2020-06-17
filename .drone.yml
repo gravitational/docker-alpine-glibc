@@ -1,0 +1,52 @@
+---
+kind: pipeline
+type: kubernetes
+name: build
+
+trigger:
+  branch:
+    - master
+  event:
+    exclude:
+      - tag
+      - promote
+      - rollback
+
+steps:
+  - name: Build and push Docker container
+    image: docker:stable-git
+    environment:
+      ALPINE_VERSION: 3.12
+      REPO: quay.io
+    settings:
+      username:
+        from_secret: QUAYIO_DOCKER_USERNAME
+      password:
+        from_secret: QUAYIO_DOCKER_PASSWORD
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+    # wait for docker to start
+    - sleep 5
+    - docker build --build-arg ALPINE_VERSION=$ALPINE_VERSION -t $REPO/gravitational/alpine-glibc:latest --pull .
+    - docker login -u="$PLUGIN_USERNAME" -p="$PLUGIN_PASSWORD" $REPO
+    - docker push $REPO/gravitational/alpine-glibc:latest
+
+services:
+  - name: Start Docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+
+volumes:
+  - name: dockersock
+    temp: {}
+
+---
+kind: signature
+hmac: 8bd7bc378698a7dfecd949b73ca96cedb7e7d6a37afceed68ceb4abc68581a84
+
+...
